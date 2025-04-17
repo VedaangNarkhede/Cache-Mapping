@@ -26,9 +26,10 @@ export function CacheInfoModal({ open, onClose }: CacheInfoModalProps) {
         </DialogHeader>
 
         <Tabs defaultValue="mapping">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="mapping">Cache Mapping</TabsTrigger>
             <TabsTrigger value="replacement">Replacement Policies</TabsTrigger>
+            <TabsTrigger value="misses">Miss Types</TabsTrigger>
           </TabsList>
 
           <TabsContent value="mapping" className="space-y-4 mt-4">
@@ -36,8 +37,8 @@ export function CacheInfoModal({ open, onClose }: CacheInfoModalProps) {
               <h3 className="text-lg font-semibold mb-2">Direct Mapping</h3>
               <p className="text-gray-700 dark:text-gray-300">
                 In direct mapping, each memory address can only go to one specific cache location. The cache location is
-                determined by: <code>cache_index = address % cache_size</code>. This is the simplest mapping technique
-                but can lead to many conflict misses when different addresses map to the same cache location.
+                determined by: <code>index = (address / block_size) % cache_size</code>. This is the simplest mapping
+                technique but can lead to many capacity misses when different addresses map to the same cache location.
               </p>
             </div>
 
@@ -57,7 +58,7 @@ export function CacheInfoModal({ open, onClose }: CacheInfoModalProps) {
                 divided into sets, and each memory address maps to a specific set. Within that set, the address can be
                 stored in any block. This provides better flexibility than direct mapping while being more efficient
                 than fully associative. The set is determined by:{" "}
-                <code>set_index = address % (cache_size / set_size)</code>.
+                <code>set_index = (address / block_size) % (cache_size / set_size)</code>.
               </p>
             </div>
           </TabsContent>
@@ -96,6 +97,36 @@ export function CacheInfoModal({ open, onClose }: CacheInfoModalProps) {
                 Random replacement simply chooses a random block to replace. While this might seem inefficient, it can
                 perform surprisingly well in practice and is very simple to implement. It doesn't require any tracking
                 of block usage.
+              </p>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="misses" className="space-y-4 mt-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Compulsory Miss</h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                A compulsory miss occurs when an address is accessed for the first time and is not found in the cache.
+                These misses are unavoidable as the first access to any address will always result in a miss. They are
+                also known as "cold start misses" because they happen when the cache is "cold" or empty.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Capacity Miss</h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                A capacity miss occurs when the cache is full and a block needs to be replaced to make room for a new
+                address. This happens when the working set of the program is larger than the cache size. In this
+                simulation, a capacity miss is counted when a replacement occurs, regardless of whether the address has
+                been seen before.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Combined Misses</h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                In some cases, a miss can be both a compulsory miss and a capacity miss. This happens when an address is
+                accessed for the first time (compulsory) and the cache is full, requiring a replacement (capacity). In
+                this simulation, we track both types separately for educational purposes.
               </p>
             </div>
           </TabsContent>

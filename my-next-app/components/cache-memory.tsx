@@ -1,51 +1,55 @@
 "use client"
 
+import type React from "react"
+
 import { motion } from "framer-motion"
+import { useEffect } from "react"
 
 interface CacheMemoryProps {
-  cache: Array<{ address: number | null; timestamp: number; frequency: number }>
+  cache: Array<{ address: number | null; timestamp: number; frequency: number; tag: number | null }>
   mappingType: string
   setSize: number
   animatingAddress: number | null
+  cacheBlockRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
 }
 
-// Update the CacheMemory component to use a 4x2 grid layout without scrolling
-export function CacheMemory({ cache, mappingType, setSize, animatingAddress }: CacheMemoryProps) {
-  // Calculate which cache index would be used for the animating address
-  const getTargetCacheIndex = (address: number | null) => {
-    if (address === null) return -1
-
-    if (mappingType === "direct") {
-      return address % cache.length
-    } else if (mappingType === "set-associative") {
-      return Math.floor((address % (cache.length / setSize)) * setSize)
-    }
-
-    return -1 // For fully associative, we don't highlight a specific target
-  }
-
-  const targetIndex = getTargetCacheIndex(animatingAddress)
+export function CacheMemory({ cache, mappingType, setSize, animatingAddress, cacheBlockRefs }: CacheMemoryProps) {
+  // Initialize refs array when cache size changes
+  useEffect(() => {
+    cacheBlockRefs.current = cacheBlockRefs.current.slice(0, cache.length)
+  }, [cache.length, cacheBlockRefs])
 
   // Render cache blocks in a 4x2 grid
   const renderCacheBlocks = () => {
     if (mappingType === "set-associative") {
       // For set-associative, we group by sets
-      const blocks = []
       const numSets = cache.length / setSize
+      const sets = []
 
       for (let i = 0; i < numSets; i++) {
-        for (let j = 0; j < setSize; j++) {
-          const index = i * setSize + j
-          blocks.push(
-            <div key={`set-${i}-block-${j}`} className="col-span-1">
-              {j === 0 && <div className="text-xs font-medium mb-1 text-gray-500">Set {i}</div>}
-              {renderCacheBlock(index)}
-            </div>,
-          )
-        }
+        const setBlocks = cache.slice(i * setSize, (i + 1) * setSize)
+        const isSetContainingAnimatingAddress =
+          animatingAddress !== null && setBlocks.some((block) => block.address === animatingAddress)
+
+        sets.push(
+          <div
+            key={`set-${i}`}
+            className={`col-span-1 p-2 rounded-lg ${
+              isSetContainingAnimatingAddress ? "bg-yellow-50 dark:bg-yellow-900/20" : "bg-gray-100 dark:bg-gray-800"
+            } border border-gray-200 dark:border-gray-700`}
+          >
+            <div className="text-xs font-medium mb-2 text-gray-500 dark:text-gray-400 text-center">Set {i}</div>
+            <div className="space-y-2">
+              {Array.from({ length: setSize }).map((_, j) => {
+                const index = i * setSize + j
+                return renderCacheBlock(index)
+              })}
+            </div>
+          </div>,
+        )
       }
 
-      return blocks
+      return sets
     } else {
       // For direct and fully associative, just render all blocks
       return cache.map((_, index) => (
@@ -58,19 +62,17 @@ export function CacheMemory({ cache, mappingType, setSize, animatingAddress }: C
 
   const renderCacheBlock = (index: number) => {
     const block = cache[index]
-    const isTarget =
-      targetIndex === index ||
-      (mappingType === "set-associative" && targetIndex <= index && index < targetIndex + setSize)
     const isAnimating = animatingAddress !== null && block.address === animatingAddress
 
     return (
       <motion.div
         key={`cache-${index}`}
+        ref={(el) => (cacheBlockRefs.current[index] = el)}
         className={`
-          p-3 rounded-lg border-2 flex items-center justify-between
+          p-4 rounded-lg border-2 flex flex-col justify-between
           ${block.address !== null ? "bg-white dark:bg-gray-800" : "bg-gray-100 dark:bg-gray-700"}
-          ${isTarget && animatingAddress !== null ? "border-yellow-400" : "border-gray-200 dark:border-gray-600"}
-          ${isAnimating ? "border-green-500" : ""}
+          ${isAnimating ? "border-green-500" : "border-gray-200 dark:border-gray-600"}
+          min-h-[120px]
         `}
         animate={
           isAnimating
@@ -82,24 +84,25 @@ export function CacheMemory({ cache, mappingType, setSize, animatingAddress }: C
         }
         transition={{ duration: 0.5 }}
       >
-        <div className="flex flex-col">
-          <span className="text-xs text-gray-500">Index {index}</span>
-          {block.address !== null ? (
-            <span className="font-mono font-bold text-sm">Addr: {block.address}</span>
-          ) : (
-            <span className="text-gray-400 text-sm">Empty</span>
+        <div className="flex justify-between items-start">
+          <span className="text-xs text-gray-500 font-semibold">Index {index}</span>
+          {block.tag !== null && (
+            <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded">
+              Tag: {block.tag}
+            </span>
           )}
         </div>
 
-        <div className="text-xs text-gray-500">
-          {block.address !== null && (
-            <>
-              <div>Freq: {block.frequency}</div>
-              <div>
-                Time: {new Date(block.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              </div>
-            </>
+        <div className="mt-2">
+          {block.address !== null ? (
+            <span className="font-mono font-bold text-lg">Addr: {block.address}</span>
+          ) : (
+            <span className="text-gray-400 text-lg">Empty</span>
           )}
+        </div>
+
+        <div className="text-xs text-gray-500 mt-2">
+          {block.address !== null && <div>Frequency: {block.frequency}</div>}
         </div>
       </motion.div>
     )
@@ -107,7 +110,11 @@ export function CacheMemory({ cache, mappingType, setSize, animatingAddress }: C
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg shadow-inner">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">{renderCacheBlocks()}</div>
+      <div
+        className={`grid ${mappingType === "set-associative" ? "grid-cols-2 md:grid-cols-4" : "grid-cols-2 md:grid-cols-4"} gap-3`}
+      >
+        {renderCacheBlocks()}
+      </div>
     </div>
   )
 }

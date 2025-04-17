@@ -40,6 +40,7 @@ export function MainMemory({ memory, animatingAddress }: MainMemoryProps) {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
+              layout
             >
               <div className="flex flex-col">
                 <span className="text-xs text-gray-500">Addr {address}</span>
