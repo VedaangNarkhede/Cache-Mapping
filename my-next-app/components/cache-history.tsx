@@ -22,7 +22,7 @@ export function CacheHistory({ history }: CacheHistoryProps) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h3 className="text-lg font-medium mb-4">Access History</h3>
-        <p className="text-gray-500 dark:text-gray-400 text-center py-4">No cache accesses yet.</p>
+        <p className="text-muted-foreground dark:text-gray-400 text-center py-4">No cache accesses yet.</p>
       </div>
     )
   }
@@ -53,7 +53,7 @@ export function CacheHistory({ history }: CacheHistoryProps) {
                   {entry.result === "hit" ? (
                     <Badge
                       variant="outline"
-                      className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border-green-200 dark:border-green-800"
+                      className="bg-[#e9edc9] text-[#606c38] dark:bg-green-900 dark:text-green-200 border-[#ccd5ae] dark:border-green-800"
                     >
                       Hit
                     </Badge>
@@ -61,14 +61,14 @@ export function CacheHistory({ history }: CacheHistoryProps) {
                     <div className="flex flex-col gap-1">
                       <Badge
                         variant="outline"
-                        className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border-red-200 dark:border-red-800"
+                        className="bg-[#f8edeb] text-[#9d6b53] dark:bg-red-900 dark:text-red-200 border-[#f5cac3] dark:border-red-800"
                       >
                         Miss
                       </Badge>
                       {entry.missType === "compulsory" && (
                         <Badge
                           variant="outline"
-                          className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800"
+                          className="text-xs bg-[#fefae0] text-[#bc6c25] dark:bg-yellow-900 dark:text-yellow-200 border-[#faedcd] dark:border-yellow-800"
                         >
                           Compulsory
                         </Badge>
@@ -76,7 +76,7 @@ export function CacheHistory({ history }: CacheHistoryProps) {
                       {entry.missType === "capacity" && (
                         <Badge
                           variant="outline"
-                          className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-200 dark:border-blue-800"
+                          className="text-xs bg-[#e0e4e8] text-[#4a5568] dark:bg-blue-900 dark:text-blue-200 border-[#cbd5e0] dark:border-blue-800"
                         >
                           Capacity
                         </Badge>
@@ -85,13 +85,13 @@ export function CacheHistory({ history }: CacheHistoryProps) {
                         <>
                           <Badge
                             variant="outline"
-                            className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800"
+                            className="text-xs bg-[#fefae0] text-[#bc6c25] dark:bg-yellow-900 dark:text-yellow-200 border-[#faedcd] dark:border-yellow-800"
                           >
                             Compulsory
                           </Badge>
                           <Badge
                             variant="outline"
-                            className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-200 dark:border-blue-800"
+                            className="text-xs bg-[#e0e4e8] text-[#4a5568] dark:bg-blue-900 dark:text-blue-200 border-[#cbd5e0] dark:border-blue-800"
                           >
                             Capacity
                           </Badge>
@@ -100,7 +100,7 @@ export function CacheHistory({ history }: CacheHistoryProps) {
                     </div>
                   )}
                 </TableCell>
-                <TableCell className="text-xs text-gray-500">
+                <TableCell className="text-xs text-muted-foreground">
                   {new Date(entry.timestamp).toLocaleTimeString()}
                 </TableCell>
               </TableRow>

@@ -496,6 +496,14 @@ export const CacheVisualizer = forwardRef<any, CacheVisualizerProps>(
             setSize={SET_SIZE}
             animatingAddress={animatingAddress}
             cacheBlockRefs={cacheBlockRefs}
+            animate={
+              isAnimating
+                ? {
+                    scale: [1, 1.05, 1],
+                    borderColor: ["hsl(var(--primary))", "hsl(var(--primary))", "hsl(var(--primary))"],
+                  }
+                : {}
+            }
           />
         </div>
 

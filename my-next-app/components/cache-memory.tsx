@@ -35,10 +35,10 @@ export function CacheMemory({ cache, mappingType, setSize, animatingAddress, cac
           <div
             key={`set-${i}`}
             className={`col-span-1 p-2 rounded-lg ${
-              isSetContainingAnimatingAddress ? "bg-yellow-50 dark:bg-yellow-900/20" : "bg-gray-100 dark:bg-gray-800"
-            } border border-gray-200 dark:border-gray-700`}
+              isSetContainingAnimatingAddress ? "bg-[#f5e6d8] dark:bg-[#5c4a3d]/20" : "bg-secondary dark:bg-gray-800"
+            } border border-[#e0d0c1] dark:border-gray-700`}
           >
-            <div className="text-xs font-medium mb-2 text-gray-500 dark:text-gray-400 text-center">Set {i}</div>
+            <div className="text-xs font-medium mb-2 text-muted-foreground dark:text-gray-400 text-center">Set {i}</div>
             <div className="space-y-2">
               {Array.from({ length: setSize }).map((_, j) => {
                 const index = i * setSize + j
@@ -70,24 +70,24 @@ export function CacheMemory({ cache, mappingType, setSize, animatingAddress, cac
         ref={(el) => (cacheBlockRefs.current[index] = el)}
         className={`
           p-4 rounded-lg border-2 flex flex-col justify-between
-          ${block.address !== null ? "bg-white dark:bg-gray-800" : "bg-gray-100 dark:bg-gray-700"}
-          ${isAnimating ? "border-green-500" : "border-gray-200 dark:border-gray-600"}
+          ${block.address !== null ? "bg-white dark:bg-gray-800" : "bg-[#f5e6d8] dark:bg-gray-700"}
+          ${isAnimating ? "border-primary" : "border-[#e0d0c1] dark:border-gray-600"}
           min-h-[120px]
         `}
         animate={
           isAnimating
             ? {
                 scale: [1, 1.05, 1],
-                borderColor: ["#10b981", "#10b981", "#10b981"],
+                borderColor: ["hsl(var(--primary))", "hsl(var(--primary))", "hsl(var(--primary))"],
               }
             : {}
         }
         transition={{ duration: 0.5 }}
       >
         <div className="flex justify-between items-start">
-          <span className="text-xs text-gray-500 font-semibold">Index {index}</span>
+          <span className="text-xs text-muted-foreground font-semibold">Index {index}</span>
           {block.tag !== null && (
-            <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded">
+            <span className="text-xs bg-[#e0d0c1] dark:bg-blue-900 text-[#7d5a50] dark:text-blue-200 px-2 py-0.5 rounded">
               Tag: {block.tag}
             </span>
           )}
@@ -97,11 +97,11 @@ export function CacheMemory({ cache, mappingType, setSize, animatingAddress, cac
           {block.address !== null ? (
             <span className="font-mono font-bold text-lg">Addr: {block.address}</span>
           ) : (
-            <span className="text-gray-400 text-lg">Empty</span>
+            <span className="text-muted-foreground text-lg">Empty</span>
           )}
         </div>
 
-        <div className="text-xs text-gray-500 mt-2">
+        <div className="text-xs text-muted-foreground mt-2">
           {block.address !== null && <div>Frequency: {block.frequency}</div>}
         </div>
       </motion.div>
@@ -109,7 +109,7 @@ export function CacheMemory({ cache, mappingType, setSize, animatingAddress, cac
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg shadow-inner">
+    <div className="bg-[#f5e6d8] dark:bg-gray-900 p-4 rounded-lg shadow-inner">
       <div
         className={`grid ${mappingType === "set-associative" ? "grid-cols-2 md:grid-cols-4" : "grid-cols-2 md:grid-cols-4"} gap-3`}
       >
